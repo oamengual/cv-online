@@ -1,7 +1,5 @@
 
-import React, { useRef, useMemo } from 'react';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import React from 'react';
 import { CVContent } from '../types';
 import { SKILLS_DATA } from '../constants';
 
@@ -11,145 +9,63 @@ interface SkillVisualizerProps {
 }
 
 const SkillVisualizer: React.FC<SkillVisualizerProps> = ({ content, theme = 'dark' }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const t = content;
   const isDark = theme === 'dark';
-
-  // Generate random positions and properties for the "cloud"
-  const nodes = useMemo(() => {
-    return t.skills.map((skill: any, i: number) => {
-      const level = (SKILLS_DATA[i]?.level || 80) / 100;
-      // Deterministic randomness based on index
-      const rng = (seed: number) => {
-        const x = Math.sin(seed + i) * 10000;
-        return x - Math.floor(x);
-      };
-
-      return {
-        ...skill,
-        level,
-        x: rng(1) * 80 + 10, // 10% to 90%
-        y: rng(2) * 80 + 10, // 10% to 90%
-        size: 1 + level * 2, // Scale factor
-        speed: 0.5 + rng(3) * 0.5,
-        delay: rng(4) * 2,
-        font: rng(5) > 0.5 ? 'font-serif italic' : 'font-sans font-bold uppercase tracking-widest',
-        rotation: (rng(6) - 0.5) * 20, // -10deg to 10deg
-      };
-    });
-  }, [t.skills]);
-
-  useGSAP(() => {
-    if (!containerRef.current) return;
-
-    const elements = gsap.utils.toArray('.skill-node');
-
-    // Floating animation
-    elements.forEach((el: any, i) => {
-      const node = nodes[i];
-
-      // Random floating movement
-      gsap.to(el, {
-        y: `+=${30 * node.speed}`,
-        x: `+=${20 * node.speed}`,
-        rotation: `+=${node.rotation}`,
-        duration: 3 + node.speed * 2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: node.delay,
-      });
-
-      // Mouse interaction (Magnetic effect)
-      const xTo = gsap.quickTo(el, "x", { duration: 0.6, ease: "power3" });
-      const yTo = gsap.quickTo(el, "y", { duration: 0.6, ease: "power3" });
-
-      const mouseMove = (e: MouseEvent) => {
-        const rect = containerRef.current?.getBoundingClientRect();
-        if (!rect) return;
-
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        // Calculate center of element
-        const elRect = el.getBoundingClientRect();
-        const elX = elRect.left - rect.left + elRect.width / 2;
-        const elY = elRect.top - rect.top + elRect.height / 2;
-
-        const dist = Math.sqrt(Math.pow(mouseX - elX, 2) + Math.pow(mouseY - elY, 2));
-        const maxDist = 300;
-
-        if (dist < maxDist) {
-          const power = (maxDist - dist) / maxDist;
-          const moveX = (mouseX - elX) * power * 0.3; // Move towards mouse
-          const moveY = (mouseY - elY) * power * 0.3;
-
-          gsap.to(el, {
-            x: moveX,
-            y: moveY,
-            overwrite: 'auto',
-            duration: 0.5
-          });
-        } else {
-          gsap.to(el, {
-            x: 0,
-            y: 0,
-            overwrite: 'auto',
-            duration: 1.5
-          });
-        }
-      };
-
-      // Add and remove listeners handled by useGSAP cleanup slightly differently, 
-      // but for simplicity in this setup we'll attach to container
-      containerRef.current?.addEventListener('mousemove', mouseMove);
-    });
-
-  }, { scope: containerRef, dependencies: [nodes] });
 
   return (
     <div className={`flex flex-col gap-32 transition-colors duration-700 ${isDark ? 'text-white' : 'text-black'}`}>
 
-      {/* SECTION 1: KINETIC CORE */}
-      <div className="flex flex-col items-center">
-        <div className={`folio mb-8 text-center opacity-60 font-bold ${isDark ? 'text-white' : 'text-black'}`}>
+      {/* SECTION 1: BRUTALIST TYPOGRAPHY (Knowledge Weight) */}
+      <div className="flex flex-col items-start w-full">
+        <div className={`folio mb-24 opacity-60 font-bold ${isDark ? 'text-white' : 'text-black'}`}>
           {t.ui.proficiency}
         </div>
 
-        <div
-          ref={containerRef}
-          className="relative w-full h-[600px] md:h-[700px] overflow-hidden rounded-sm border border-black/5 bg-black/[0.02]"
-        >
-          {/* Center Gravity Point Visual */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-32 bg-black/10 rotate-45" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-px bg-black/10 rotate-45" />
+        <div className="w-full flex flex-wrap items-baseline leading-[0.8] mix-blend-difference">
+          {t.skills.map((skill: any, i: number) => {
+            const level = SKILLS_DATA[i]?.level || 80;
+            // Calculate visual weight based on level
+            // 90-100: "Hero" sizes
+            // 80-90: "Headline" sizes
+            // <80: "Body" sizes
 
-          {nodes.map((node: any, i: number) => (
-            <div
-              key={i}
-              className={`skill-node absolute cursor-default select-none flex flex-col items-center justify-center text-center p-4 transition-colors duration-500 hover:z-50 group`}
-              style={{
-                left: `${node.x}%`,
-                top: `${node.y}%`,
-              }}
-            >
-              <span
-                className={`block ${node.font} ${isDark ? 'text-white' : 'text-black'} opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300`}
-                style={{
-                  fontSize: `${Math.max(1, node.size)}rem`
-                }}
-              >
-                {node.name}
-              </span>
-              <span className={`block text-[10px] tracking-widest font-bold uppercase opacity-0 group-hover:opacity-60 transition-opacity duration-300 translate-y-2 ${isDark ? 'text-white' : 'text-black'}`}>
-                {Math.round(node.level * 100)}%
-              </span>
-            </div>
-          ))}
+            let fontSizeClass = "text-4xl md:text-5xl";
+            let fontWeightClass = "font-light";
+            let opacityClass = "opacity-70";
+            let marginClass = "mr-8 mb-4";
+
+            if (level >= 95) {
+              fontSizeClass = "text-[15vw] md:text-[8vw]"; // Massive
+              fontWeightClass = "font-black tracking-tighter";
+              opacityClass = "opacity-100";
+              marginClass = "w-full mb-0 leading-[0.8]"; // Force full width line break often
+            } else if (level >= 90) {
+              fontSizeClass = "text-[10vw] md:text-[6vw]";
+              fontWeightClass = "font-bold tracking-tight";
+              opacityClass = "opacity-90";
+              marginClass = "mr-12 mb-2";
+            } else if (level >= 80) {
+              fontSizeClass = "text-[8vw] md:text-[4vw]";
+              fontWeightClass = "font-medium italic";
+              opacityClass = "opacity-80";
+              marginClass = "mr-8 mb-4";
+            }
+
+            return (
+              <div key={i} className={`relative group ${marginClass} transition-all duration-500 hover:opacity-100`}>
+                <span className={`${fontSizeClass} ${fontWeightClass} ${opacityClass} font-serif ${isDark ? 'text-white' : 'text-black'} block transition-transform duration-300 group-hover:scale-[1.02] origin-left`}>
+                  {skill.name}
+                  <span className="text-sm md:text-lg font-sans font-bold tracking-widest align-top ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute -top-4 right-0">
+                    {level}%
+                  </span>
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* SECTION 2: SOFT SKILLS */}
+      {/* SECTION 2: SOFT SKILLS (Kept as is for balance) */}
       <div className={`border-t pt-32 ${isDark ? 'border-white/20' : 'border-black/20'}`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
           <div className="lg:col-span-12 mb-16">
