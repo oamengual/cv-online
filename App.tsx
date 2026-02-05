@@ -211,6 +211,11 @@ const App: React.FC = () => {
                 playsInline
                 preload="auto"
                 onCanPlay={() => setIsVideoReady(true)}
+                onPlaying={() => {
+                  // Hack for mobile: Force pause immediately after autoplay starts 
+                  // to allow scroll-based scrubbing to take over.
+                  if (videoRef.current) videoRef.current.pause();
+                }}
               >
                 <source src="video-hero.mp4" type="video/mp4" />
                 Tu navegador no soporta el tag de video.
