@@ -1,9 +1,9 @@
 
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 // Removed unused GeminiService import
-import { TRANSLATIONS } from './constants.tsx';
-import { CVContent, Language } from './types.ts';
-import SkillVisualizer from './components/SkillVisualizer.tsx';
+import { TRANSLATIONS } from './constants';
+import { CVContent, Language } from './types';
+import SkillVisualizer from './components/SkillVisualizer';
 
 const useIntersectionObserver = (options = {}) => {
   const [isVisible, setIsVisible] = useState(false);
