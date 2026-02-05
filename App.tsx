@@ -204,10 +204,12 @@ const App: React.FC = () => {
               />
               <video
                 ref={videoRef}
+                className={`w-full h-full object-cover transition-opacity duration-1000 ${isVideoReady ? 'opacity-100' : 'opacity-0'}`}
+                autoPlay
                 muted
                 loop
                 playsInline
-                className={`w-full h-full object-cover transition-opacity duration-1000 ${isVideoReady ? 'opacity-100' : 'opacity-0'}`}
+                preload="auto"
                 onCanPlay={() => setIsVideoReady(true)}
               >
                 <source src="video-hero.mp4" type="video/mp4" />
