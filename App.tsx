@@ -289,7 +289,7 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto w-full relative z-10">
             <div className="mb-24 reveal-box">
               <span className="folio mb-2 text-black/60 font-bold">{t.ui.impact}</span>
-              <h2 className="font-serif text-6xl md:text-7xl font-bold text-black mt-4 italic">{t.ui.impact}</h2>
+              <h2 className="font-serif text-4xl md:text-7xl font-bold text-black mt-4 italic break-words">{t.ui.impact}</h2>
               <div className="rule mt-12 bg-black opacity-20" />
             </div>
             <div className="editorial-grid">
@@ -298,8 +298,8 @@ const App: React.FC = () => {
                   <div className="p-0 border-l border-black/30 pl-12 h-full flex flex-col justify-between group">
                     <div>
                       <span className="font-serif italic text-3xl text-black/40 block mb-8">0{i + 1}</span>
-                      <h3 className="font-serif text-5xl font-bold text-black mb-10 leading-tight">{proj.title}</h3>
-                      <p className="text-2xl leading-relaxed text-black/70 font-light group-hover:text-black transition-colors">{proj.description}</p>
+                      <h3 className="font-serif text-3xl md:text-5xl font-bold text-black mb-10 leading-tight break-words">{proj.title}</h3>
+                      <p className="text-xl md:text-2xl leading-relaxed text-black/70 font-light group-hover:text-black transition-colors">{proj.description}</p>
                     </div>
                   </div>
                 </div>
@@ -313,7 +313,7 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto w-full">
             <div className="mb-24 reveal-box">
               <span className="folio mb-2 text-white/60 font-bold">{t.ui.archive}</span>
-              <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mt-4 italic">{t.ui.legacy}</h2>
+              <h2 className="font-serif text-4xl md:text-7xl font-bold text-white mt-4 italic break-words">{t.ui.legacy}</h2>
               <div className="rule mt-12 bg-white opacity-20" />
             </div>
             <div className="editorial-grid">
@@ -341,7 +341,7 @@ const App: React.FC = () => {
           <div className="max-w-5xl mx-auto w-full">
             <div className="mb-24 reveal-box">
               <span className="folio mb-2 text-white/60 font-bold">{t.ui.pedigree}</span>
-              <h2 className="font-serif text-6xl md:text-7xl font-bold text-white mt-4 italic">{t.ui.foundation}</h2>
+              <h2 className="font-serif text-4xl md:text-7xl font-bold text-white mt-4 italic break-words">{t.ui.foundation}</h2>
               <div className="rule mt-12 bg-white opacity-20" />
             </div>
             <div className="space-y-24">
@@ -364,7 +364,7 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto w-full">
             <div className="mb-24 reveal-box">
               <span className="folio mb-2 text-black/60 font-bold">{t.ui.coreSubtitle}</span>
-              <h2 className="font-serif text-6xl md:text-7xl font-bold text-black mt-4 italic">
+              <h2 className="font-serif text-4xl md:text-7xl font-bold text-black mt-4 italic break-words">
                 {t.ui.coreTitle.split('.')[0]} <span className="text-black">.</span>
               </h2>
               <div className="rule mt-12 bg-black opacity-20" />
@@ -382,11 +382,11 @@ const App: React.FC = () => {
               {t.ui.craft}
             </h2>
             <div className="flex flex-col items-center gap-16">
-              <a href={`mailto:${t.info.contact.email}`} className="text-4xl md:text-7xl font-light tracking-tight hover:text-white hover:border-white transition-all border-b border-white/30 pb-6 text-white/90">
+              <a href={`mailto:${t.info.contact.email}`} className="text-2xl md:text-7xl font-light tracking-tight hover:text-white hover:border-white transition-all border-b border-white/30 pb-6 text-white/90 break-all text-center">
                 {t.info.contact.email}
               </a>
               {t.info.contact.phone && (
-                <a href={`tel:${t.info.contact.phone.replace(/\s+/g, '')}`} className="text-2xl md:text-4xl font-light tracking-tight hover:text-white hover:border-white transition-all border-b border-white/30 pb-4 text-white/90">
+                <a href={`tel:${t.info.contact.phone.replace(/\s+/g, '')}`} className="text-xl md:text-4xl font-light tracking-tight hover:text-white hover:border-white transition-all border-b border-white/30 pb-4 text-white/90">
                   {t.info.contact.phone}
                 </a>
               )}
