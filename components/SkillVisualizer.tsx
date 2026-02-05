@@ -15,25 +15,37 @@ const SkillVisualizer: React.FC<SkillVisualizerProps> = ({ content, theme = 'dar
   const borderColor = isDark ? 'border-white/10' : 'border-black/10';
   const axisColor = isDark ? 'bg-white/20' : 'bg-black/20';
 
-  // Desktop Orbits Configuration
-  const totalSkills = t.skills.length;
-
-  // Mobile: Planetary Alignment (Vertical List)
+  // Mobile: Planetary Alignment (Vertical List with Circles)
   const MobileView = () => (
-    <div className="md:hidden w-full pl-8 relative border-l border-dashed border-white/20 ml-4 py-8 space-y-12">
+    <div className="md:hidden w-full flex flex-col items-center gap-12 py-12 relative overflow-visible">
+
+      {/* Decorative Axis Line */}
+      <div className={`absolute top-0 bottom-0 left-1/2 w-px -translate-x-1/2 ${axisColor} border-l border-dashed opacity-50`} />
+
       {t.skills.map((skill: any, i: number) => {
         const level = SKILLS_DATA[i]?.level || 80;
-        return (
-          <div key={i} className="relative group">
-            {/* Planet Node on Axis */}
-            <div className={`absolute -left-[37px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full ${isDark ? 'bg-white' : 'bg-black'} flex items-center justify-center ring-4 ring-black`}>
-              <div className="w-1 h-1 bg-black rounded-full animate-pulse" />
-            </div>
+        // Size dynamic based on level: 100px to 130px
+        const size = 110 + (level - 80) * 1.5;
 
-            <div className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] tracking-widest opacity-50 uppercase mb-1">Orbit {i + 1} • {level}%</span>
-              <h4 className={`text-2xl font-serif italic ${isDark ? 'text-white' : 'text-black'}`}>{skill.name}</h4>
-              <p className="text-xs opacity-60 max-w-[200px]">{skill.category}</p>
+        return (
+          <div key={i} className="relative z-10 my-4">
+            <div
+              className={`rounded-full flex flex-col items-center justify-center text-center p-4 shadow-[0_0_30px_rgba(0,0,0,0.1)] backdrop-blur-md border ${borderColor} transition-transform duration-500 hover:scale-110`}
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                backgroundColor: isDark ? 'rgba(20,20,20,0.9)' : 'rgba(255,255,255,0.9)'
+              }}
+            >
+              <div className="flex flex-col items-center justify-center h-full w-full">
+                <h4 className={`text-sm font-serif font-bold italic leading-tight ${isDark ? 'text-white' : 'text-black'} break-words w-full px-2`}>
+                  {skill.name}
+                </h4>
+                <span className="text-[9px] font-mono tracking-widest mt-2 opacity-60">{level}%</span>
+              </div>
+
+              {/* Orbit Ring visual for mobile (decorative) */}
+              <div className={`absolute -inset-4 rounded-full border ${borderColor} opacity-30 animate-pulse`} style={{ animationDuration: '4s' }} />
             </div>
           </div>
         )
@@ -41,79 +53,94 @@ const SkillVisualizer: React.FC<SkillVisualizerProps> = ({ content, theme = 'dar
     </div>
   );
 
-  // Desktop: Solar System (Orbits)
+  // Desktop: Solar System (Orbits with Text Inside)
   const DesktopView = () => {
+    const totalSkills = t.skills.length;
+
     // Generate orbits
     const orbits = useMemo(() => {
       return t.skills.map((skill: any, i: number) => {
         const level = SKILLS_DATA[i]?.level || 80;
-        // Distribute radii logarithmically or linearly
-        const radius = 120 + (i * 35);
-        const duration = 20 + (i * 5); // Slower outer orbits
-        const startAngle = (i * (360 / totalSkills));
+
+        // Radius Logic:
+        // Needs enough gap for the circles. Circles are ~100-140px.
+        // Gap should be at least 70px (radius difference).
+        // Start further out to clear core.
+        const radius = 200 + (i * 75);
+
+        // Duration: Outer planets move slower
+        const duration = 60 + (i * 10);
+
+        // Start Angle: Stagger them to ensure they don't overlap visually at start.
+        // Using logic to spread them out. 
+        // We can pick specific "quadrants" or just a fixed step.
+        const startAngle = (i * 130) % 360;
 
         return { ...skill, radius, duration, startAngle, level };
       });
     }, [t.skills]);
 
     return (
-      <div className="hidden md:flex justify-center items-center w-full h-[800px] relative overflow-hidden">
+      <div className="hidden md:flex justify-center items-center w-full h-[1000px] relative overflow-hidden my-12">
         {/* Central Sun/Core */}
-        <div className="absolute z-20 flex flex-col items-center justify-center w-32 h-32 rounded-full border border-dashed border-white/30 backdrop-blur-sm bg-white/5">
-          <span className="font-serif italic text-xl">The Core</span>
+        <div className={`absolute z-20 flex flex-col items-center justify-center w-48 h-48 rounded-full border border-dashed ${borderColor} backdrop-blur-md bg-white/5 shadow-[0_0_60px_rgba(255,255,255,0.05)]`}>
+          <span className={`font-serif italic text-3xl ${isDark ? 'text-white' : 'text-black'}`}>The Core</span>
+          <span className="font-mono text-[9px] tracking-[0.3em] mt-3 opacity-50 uppercase">System Integrity</span>
         </div>
 
-        {/* Orbits */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
+        {/* Orbits Container */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           {orbits.map((orbit: any, i: number) => (
-            <circle
+            <div
               key={i}
-              cx="50%"
-              cy="50%"
-              r={orbit.radius}
-              fill="none"
-              stroke={mainColor}
-              strokeOpacity={0.1}
-              strokeDasharray="4 4"
+              className={`absolute rounded-full border ${borderColor} opacity-20`}
+              style={{
+                width: orbit.radius * 2,
+                height: orbit.radius * 2,
+              }}
             />
           ))}
-        </svg>
+        </div>
 
         {/* Planets */}
         {orbits.map((orbit: any, i: number) => (
           <div
             key={i}
-            className="absolute top-1/2 left-1/2 flex items-center"
+            className="absolute top-1/2 left-1/2 flex items-center justify-center"
             style={{
               width: orbit.radius * 2,
               height: orbit.radius * 2,
               marginLeft: -orbit.radius,
               marginTop: -orbit.radius,
               animation: `spin ${orbit.duration}s linear infinite`,
-              animationDelay: `-${i * 2}s`
+              transform: `rotate(${orbit.startAngle}deg)`
             }}
           >
-            {/* The Planet & Label Container - Counter-rotates to keep text upright */}
+            {/* The Planet Container - Positioned on the ring */}
             <div
-              className="absolute -top-[6px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 group cursor-pointer"
+              className="absolute -top-[0px] left-1/2 -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
               style={{
                 animation: `spin ${orbit.duration}s linear infinite reverse`,
-                animationDelay: `-${i * 2}s`
               }}
             >
-              {/* Planet Body */}
-              <div className={`w-3 h-3 rounded-full ${isDark ? 'bg-white' : 'bg-black'} shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-transform duration-300 group-hover:scale-150`} />
-
-              {/* Label */}
-              <div className="flex flex-col items-center opacity-70 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-black/50 backdrop-blur-md px-3 py-1 rounded-sm border border-white/10">
-                <span className="font-serif text-sm">{orbit.name}</span>
-                <span className="text-[8px] font-mono tracking-widest">{orbit.level}%</span>
+              {/* Planet Body (Circle with Text) */}
+              <div
+                className={`rounded-full flex flex-col items-center justify-center text-center p-4 transition-all duration-500 hover:scale-110 hover:z-50 hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] border ${borderColor} backdrop-blur-md`}
+                style={{
+                  width: `${110 + (orbit.level - 80) * 1.5}px`, // Size 110px - 140px
+                  height: `${110 + (orbit.level - 80) * 1.5}px`,
+                  backgroundColor: isDark ? 'rgba(10,10,10,0.9)' : 'rgba(255,255,255,0.95)'
+                }}
+              >
+                <h4 className={`text-sm md:text-base font-serif font-bold italic leading-tight ${isDark ? 'text-white' : 'text-black'} break-words w-full px-1`}>
+                  {orbit.name}
+                </h4>
+                <span className="text-[9px] font-mono tracking-widest mt-2 opacity-60 block">{orbit.level}%</span>
               </div>
             </div>
           </div>
         ))}
 
-        {/* CSS for Spin */}
         <style>{`
             @keyframes spin {
                 from { transform: rotate(0deg); }
