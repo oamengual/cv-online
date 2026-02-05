@@ -331,7 +331,7 @@ const App: React.FC = () => {
                     <div className="space-y-8 flex-1">
                       <div>
                         <div className="folio mb-4 opacity-60 text-white font-bold">{exp.period}</div>
-                        <h3 className="font-serif text-4xl font-bold leading-tight mb-2 text-white">{exp.role}</h3>
+                        <h3 className="font-serif text-2xl md:text-4xl font-bold leading-tight mb-2 text-white">{exp.role}</h3>
                         <div className="text-xs font-bold uppercase tracking-[0.3em] text-white/80">{exp.company}</div>
                       </div>
                       <p className="text-2xl leading-relaxed text-white/70 font-light group-hover:text-white transition-colors">{exp.description}</p>
