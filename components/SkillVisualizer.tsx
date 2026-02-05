@@ -52,8 +52,8 @@ const SkillVisualizer: React.FC<SkillVisualizerProps> = ({ content, theme = 'dar
             {t.ui.proficiency}
           </div>
 
-          <div className="relative aspect-square md:aspect-video flex justify-center items-center">
-            <svg viewBox="0 0 300 300" className="w-full max-w-[650px] h-auto overflow-visible">
+          <div className="relative aspect-square md:aspect-video flex justify-center items-center w-full">
+            <svg viewBox="0 0 300 300" className="w-full max-w-full md:max-w-[650px] h-auto overflow-visible">
               {[0.25, 0.5, 0.75, 1].map((r, i) => (
                 <circle key={i} cx="150" cy="150" r={90 * r} fill="none" stroke={mainColor} strokeOpacity={0.15} strokeWidth="0.5" />
               ))}
