@@ -11,68 +11,67 @@ interface SkillVisualizerProps {
 const SkillVisualizer: React.FC<SkillVisualizerProps> = ({ content, theme = 'dark' }) => {
   const t = content;
   const isDark = theme === 'dark';
+  const borderColor = isDark ? 'border-white/20' : 'border-black/20';
+  const textColor = isDark ? 'text-white' : 'text-black';
+  const subTextColor = isDark ? 'text-white/60' : 'text-black/60';
+  const dataColor = isDark ? 'text-white/80' : 'text-black/80';
 
   return (
-    <div className={`flex flex-col gap-32 transition-colors duration-700 ${isDark ? 'text-white' : 'text-black'}`}>
+    <div className={`flex flex-col gap-32 transition-colors duration-700 ${textColor}`}>
 
-      {/* SECTION 1: BRUTALIST TYPOGRAPHY (Knowledge Weight) */}
-      <div className="flex flex-col items-start w-full">
-        <div className={`folio mb-24 opacity-60 font-bold ${isDark ? 'text-white' : 'text-black'}`}>
-          {t.ui.proficiency}
+      {/* SECTION 1: THE BLUEPRINT (Technical Specs) */}
+      <div className="flex flex-col w-full">
+        <div className={`folio mb-16 opacity-60 font-bold flex justify-between items-end ${borderColor} border-b pb-4`}>
+          <span>{t.ui.proficiency}</span>
+          <span className="font-mono text-[10px] tracking-widest">SYS.DIAGNOSTIC.V.2.5</span>
         </div>
 
-        <div className="w-full flex flex-wrap items-baseline leading-[0.8] mix-blend-difference">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-0">
           {t.skills.map((skill: any, i: number) => {
             const level = SKILLS_DATA[i]?.level || 80;
-            // Calculate visual weight based on level
-            // 90-100: "Hero" sizes
-            // 80-90: "Headline" sizes
-            // <80: "Body" sizes
-
-            let fontSizeClass = "text-4xl md:text-5xl";
-            let fontWeightClass = "font-light";
-            let opacityClass = "opacity-70";
-            let marginClass = "mr-8 mb-4";
-
-            if (level >= 95) {
-              fontSizeClass = "text-[15vw] md:text-[8vw]"; // Massive
-              fontWeightClass = "font-black tracking-tighter";
-              opacityClass = "opacity-100";
-              marginClass = "w-full mb-0 leading-[0.8]"; // Force full width line break often
-            } else if (level >= 90) {
-              fontSizeClass = "text-[10vw] md:text-[6vw]";
-              fontWeightClass = "font-bold tracking-tight";
-              opacityClass = "opacity-90";
-              marginClass = "mr-12 mb-2";
-            } else if (level >= 80) {
-              fontSizeClass = "text-[8vw] md:text-[4vw]";
-              fontWeightClass = "font-medium italic";
-              opacityClass = "opacity-80";
-              marginClass = "mr-8 mb-4";
-            }
-
             return (
-              <div key={i} className={`relative group ${marginClass} transition-all duration-500 hover:opacity-100`}>
-                <span className={`${fontSizeClass} ${fontWeightClass} ${opacityClass} font-serif ${isDark ? 'text-white' : 'text-black'} block transition-transform duration-300 group-hover:scale-[1.02] origin-left`}>
-                  {skill.name}
-                  <span className="text-sm md:text-lg font-sans font-bold tracking-widest align-top ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute -top-4 right-0">
-                    {level}%
+              <div key={i} className={`group relative py-6 border-b ${borderColor} flex flex-col justify-center`}>
+                <div className="flex items-baseline justify-between mb-2 relative z-10">
+                  <h4 className="text-3xl md:text-4xl font-serif italic tracking-tight">
+                    {skill.name}
+                  </h4>
+                  <span className={`font-mono text-sm md:text-base tracking-widest ${dataColor} opacity-50 group-hover:opacity-100 transition-opacity`}>
+                    {level < 100 ? `0${level}` : level}%
                   </span>
-                </span>
+                </div>
+
+                {/* Technical Specs Line */}
+                <div className="w-full flex items-center gap-4 opacity-40 group-hover:opacity-80 transition-opacity duration-500">
+                  <span className="text-[9px] font-mono tracking-widest uppercase shrink-0">{skill.category}</span>
+                  <div className={`h-px flex-1 ${isDark ? 'bg-white/30' : 'bg-black/30'}`}></div>
+                  <span className="text-[9px] font-mono tracking-widest uppercase shrink-0">IDX_0{i + 1}</span>
+                </div>
+
+                {/* Progress Indicator (Background) */}
+                <div
+                  className={`absolute bottom-0 left-0 h-[2px] ${isDark ? 'bg-white' : 'bg-black'} transition-all duration-1000 ease-out opacity-0 group-hover:opacity-100`}
+                  style={{ width: `${level}%` }}
+                />
               </div>
             );
           })}
         </div>
+
+        {/* Footer Metadata for the Blueprint */}
+        <div className="mt-8 flex justify-between font-mono text-[9px] tracking-[0.2em] opacity-40 uppercase">
+          <span>Core System Architecture</span>
+          <span>EST. 2025</span>
+        </div>
       </div>
 
-      {/* SECTION 2: SOFT SKILLS (Kept as is for balance) */}
-      <div className={`border-t pt-32 ${isDark ? 'border-white/20' : 'border-black/20'}`}>
+      {/* SECTION 2: SOFT SKILLS (Maintains balance) */}
+      <div className={`border-t pt-32 ${borderColor}`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
           <div className="lg:col-span-12 mb-16">
-            <div className={`folio mb-2 opacity-60 font-bold ${isDark ? 'text-white' : 'text-black'}`}>
+            <div className={`folio mb-2 opacity-60 font-bold ${textColor}`}>
               {t.ui.humanLogic}
             </div>
-            <h3 className={`font-serif text-6xl md:text-7xl font-bold italic mt-4 ${isDark ? 'text-white' : 'text-black'}`}>
+            <h3 className={`font-serif text-6xl md:text-7xl font-bold italic mt-4 ${textColor}`}>
               Factores Humanos.
             </h3>
             <div className={`rule mt-12 ${isDark ? 'bg-white' : 'bg-black'} opacity-20`} />
@@ -83,8 +82,8 @@ const SkillVisualizer: React.FC<SkillVisualizerProps> = ({ content, theme = 'dar
               <div key={i} className={`group relative border p-10 transition-all duration-500 overflow-hidden ${isDark ? 'border-white/10 hover:border-white/40' : 'border-black/10 hover:border-black/40'}`}>
                 <span className={`absolute -right-4 -bottom-8 text-[8rem] font-serif italic pointer-events-none transition-colors ${isDark ? 'text-white/5 group-hover:text-white/10' : 'text-black/5 group-hover:text-black/10'}`}>0{i + 1}</span>
                 <div className="relative z-10">
-                  <h4 className={`text-3xl font-serif font-bold leading-tight mb-4 ${isDark ? 'text-white' : 'text-black'}`}>{skill.name}</h4>
-                  <p className={`text-lg font-light leading-relaxed ${isDark ? 'text-white/60 group-hover:text-white/90' : 'text-black/60 group-hover:text-black/90'}`}>{skill.description}</p>
+                  <h4 className={`text-3xl font-serif font-bold leading-tight mb-4 ${textColor}`}>{skill.name}</h4>
+                  <p className={`text-lg font-light leading-relaxed ${subTextColor} group-hover:opacity-100`}>{skill.description}</p>
                 </div>
               </div>
             ))}
