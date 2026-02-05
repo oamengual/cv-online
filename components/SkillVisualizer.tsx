@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { SKILLS_DATA } from '../constants';
 import { CVContent } from '../types';
 
@@ -11,71 +11,52 @@ interface SkillVisualizerProps {
 const SkillVisualizer: React.FC<SkillVisualizerProps> = ({ content, theme = 'dark' }) => {
   const t = content;
   const isDark = theme === 'dark';
-  const mainColor = isDark ? 'white' : 'black';
-
-  const radarPoints = useMemo(() => {
-    const totalSkills = t.skills.length;
-    const centerX = 150;
-    const centerY = 150;
-    const radius = 90;
-    const labelRadius = 115;
-
-    return t.skills.map((skill: any, i: number) => {
-      const level = (SKILLS_DATA[i]?.level || 80) / 100;
-      const angle = (Math.PI * 2 * i) / totalSkills - Math.PI / 2;
-
-      let textAnchor = "middle";
-      if (Math.cos(angle) > 0.2) textAnchor = "start";
-      if (Math.cos(angle) < -0.2) textAnchor = "end";
-
-      return {
-        x: centerX + radius * level * Math.cos(angle),
-        y: centerY + radius * level * Math.sin(angle),
-        labelX: centerX + labelRadius * Math.cos(angle),
-        labelY: centerY + labelRadius * Math.sin(angle),
-        name: skill.name,
-        category: skill.category,
-        anchor: textAnchor,
-        angle: angle
-      };
-    });
-  }, [t.skills]);
-
-  const radarPolygon = radarPoints.map((p: any) => `${p.x},${p.y}`).join(' ');
+  const borderColor = isDark ? 'border-white/20' : 'border-black/20';
+  const barBg = isDark ? 'bg-white/10' : 'bg-black/5';
+  const barFill = isDark ? 'bg-white' : 'bg-black';
 
   return (
-    <div className={`flex flex-col gap-48 transition-colors duration-700 ${isDark ? 'text-white' : 'text-black'}`}>
+    <div className={`flex flex-col gap-32 transition-colors duration-700 ${isDark ? 'text-white' : 'text-black'}`}>
 
-      <div className="flex flex-col items-center">
-        <div className="w-full max-w-4xl relative">
-          <div className={`folio mb-16 text-center opacity-60 font-bold ${isDark ? 'text-white' : 'text-black'}`}>
-            {t.ui.proficiency}
-          </div>
+      {/* SECTION 1: HARD SKILLS (Replaces Radar Chart) */}
+      <div className="flex flex-col">
+        <div className={`folio mb-16 text-center opacity-60 font-bold ${isDark ? 'text-white' : 'text-black'}`}>
+          {t.ui.proficiency}
+        </div>
 
-          <div className="relative aspect-square md:aspect-video flex justify-center items-center w-full">
-            <svg viewBox="-50 -50 400 400" className="w-full max-w-full md:max-w-[650px] h-auto overflow-visible">
-              {[0.25, 0.5, 0.75, 1].map((r, i) => (
-                <circle key={i} cx="150" cy="150" r={90 * r} fill="none" stroke={mainColor} strokeOpacity={0.15} strokeWidth="0.5" />
-              ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+          {t.skills.map((skill: any, i: number) => {
+            const level = SKILLS_DATA[i]?.level || 80;
+            return (
+              <div key={i} className="group flex flex-col gap-4">
+                <div className="flex justify-between items-baseline">
+                  <h4 className={`text-2xl md:text-3xl font-serif font-bold italic ${isDark ? 'text-white' : 'text-black'}`}>
+                    {skill.name}
+                  </h4>
+                  <span className="folio text-xs opacity-50 font-bold tracking-widest">
+                    0{i + 1}
+                  </span>
+                </div>
 
-              {radarPoints.map((p: any, i: number) => (
-                <line key={i} x1="150" y1="150" x2={150 + 90 * Math.cos(p.angle)} y2={150 + 90 * Math.sin(p.angle)} stroke={mainColor} strokeOpacity="0.1" strokeWidth="0.5" />
-              ))}
+                <div className={`w-full h-1 ${barBg} relative overflow-hidden`}>
+                  <div
+                    className={`absolute top-0 left-0 h-full ${barFill} transition-all duration-1000 ease-out`}
+                    style={{ width: `${level}%` }}
+                  />
+                </div>
 
-              <polygon points={radarPolygon} fill={mainColor} fillOpacity="0.15" stroke={mainColor} strokeWidth="1.5" strokeOpacity="0.9" className="transition-all duration-1000 ease-in-out" />
-
-              {radarPoints.map((p: any, i: number) => (
-                <g key={i} className="group/point">
-                  <circle cx={p.x} cy={p.y} r="2.5" fill={mainColor} />
-                  <text x={p.labelX} y={p.labelY} textAnchor={p.anchor} className={`font-mono text-[7px] uppercase tracking-widest font-bold ${isDark ? 'fill-white' : 'fill-black'}`} style={{ dominantBaseline: 'middle' }}>{p.name}</text>
-                </g>
-              ))}
-            </svg>
-          </div>
+                <div className="flex justify-between text-xs opacity-50 font-bold uppercase tracking-wider">
+                  <span>{skill.category}</span>
+                  <span>{level}%</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div className={`border-t pt-32 ${isDark ? 'border-white/20' : 'border-black/20'}`}>
+      {/* SECTION 2: SOFT SKILLS (Unchanged, just ensuring consistent styling) */}
+      <div className={`border-t pt-32 ${borderColor}`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
           <div className="lg:col-span-12 mb-16">
             <div className={`folio mb-2 opacity-60 font-bold ${isDark ? 'text-white' : 'text-black'}`}>
