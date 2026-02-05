@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react';
 // Si es 'usuario.github.io', el base debe ser '/'
 export default defineConfig({
   plugins: [react()],
-  base: '/online-cv/', 
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
